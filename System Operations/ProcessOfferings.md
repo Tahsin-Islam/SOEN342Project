@@ -1,6 +1,8 @@
 ### Operation:
 `offerNewLesson(lessonType, mode);` 
 
+### Cross References:
+Use case - Process Bookings
 ### Preconditions:
 - The `Admin` must be logged into the system
 - The various `lessonType` must be predefined
