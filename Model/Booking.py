@@ -1,22 +1,15 @@
-package Model;
+class Booking:
+    def __init__(self, booking_number):
+        self.booking_number = booking_number
 
-public class Booking {
-    private int bookingNumber;
+    def get_booking_number(self):
+        return self.booking_number
 
-    public Booking(int bookingNumber){
-        this.bookingNumber = bookingNumber;
-    }
+    def set_booking_number(self, booking_number):
+        self.booking_number = booking_number
 
-    public int getBookingNumber() {
-        return bookingNumber;
-    }
+    def __eq__(self, other):
+        if isinstance(other, Booking):
+            return self.booking_number == other.booking_number
+        return False
 
-    public void setBookingNumber(int bookingNumber) {
-        this.bookingNumber = bookingNumber;
-    }
-
-
-    public boolean equals(Booking anotherBooking) {
-        return this.bookingNumber == anotherBooking.bookingNumber;
-    }
-}

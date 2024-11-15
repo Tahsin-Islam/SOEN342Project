@@ -1,32 +1,20 @@
-package Model;
+class Administrator:
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
 
-public class Administrator {
-    private String username;
-    private String password;
+    def get_username(self):
+        return self.username
 
-    public Administrator(String username, String password){
-        this.username = username;
-        this.password = password;
-    }
+    def get_password(self):
+        return self.password
 
-    public String getUsername() {
-        return username;
-    }
+    def set_username(self, username):
+        self.username = username
 
-    public String getPassword() {
-        return password;
-    }
+    def set_password(self, password):
+        self.password = password
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    def __eq__(self, other):
+        return self.username == other.username and self.password == other.password
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public boolean equals(Administrator anotherAdministrator) {
-        return this.username.equals(anotherAdministrator.username) &&
-                this.password.equals(anotherAdministrator.password);
-    }
-}
