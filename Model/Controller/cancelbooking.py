@@ -20,7 +20,7 @@ def get_user_bookings(client_id):
             with connection.cursor() as cursor:
                 # SQL query to get bookings for the specific client
                 query = """
-                SELECT *
+                SELECT o.id, l.id, l.start_date, l.end_date, l.location_id
                 FROM booking b
                 JOIN Offering o ON b.offering_id = o.id
                 JOIN Lesson l ON o.lesson_type_id = l.lesson_type_id
@@ -33,7 +33,7 @@ def get_user_bookings(client_id):
                     print("No bookings found for this client.")
                 else:
                     for booking in bookings:
-                        print(f"Offering ID: {booking[0]}, Lesson: {booking[3]}, Start Date: {booking[4]}, End Date: {booking[5]}, Location: {booking[6]}")
+                        print(f"Offering ID: {booking[0]}, Lesson: {booking[1]}, Start Date: {booking[2]}, End Date: {booking[3]}, Location: {booking[4]}")
                 return bookings
     except Exception as e:
         print(f"Error retrieving bookings: {e}")
@@ -66,10 +66,10 @@ def delete_booking(client_id, offering_id):
 
 # Example usage:
 # Step 1: Get the bookings for the client with ID 1
-client_id = 1
-bookings = get_user_bookings(client_id)
+# client_id = 1
+# bookings = get_user_bookings(client_id)
 
-# Step 2: Delete a specific booking by offering_id (e.g., offering_id 3)
-if bookings:
-    offering_id_to_delete = bookings[0][0]  # Let's assume we want to delete the first booking
-    delete_booking(client_id, offering_id_to_delete)
+# # Step 2: Delete a specific booking by offering_id (e.g., offering_id 3)
+# if bookings:
+#     offering_id_to_delete = bookings[0][0]  # Let's assume we want to delete the first booking
+#     delete_booking(client_id, offering_id_to_delete)

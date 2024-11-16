@@ -3,6 +3,8 @@ from psycopg2 import OperationalError
 from client_view import display_client_menu, get_client_choice
 from selectlesson import manage_user_lessons
 from bookoffering import book_offer
+from cancelbooking import get_user_bookings, delete_booking
+from addClient import add_client_to_database
 
 DB_HOST = "localhost"
 DB_NAME = "lesson_management_system"
@@ -59,6 +61,30 @@ def handle_client_menu():
             except ValueError:
                 print("Invalid client ID. Please enter a numeric value.")
         elif choice == "5":
+            client_id = input("\nEnter your Client ID: ")
+            try:
+                user_id = int(client_id)
+                get_user_bookings(client_id)
+                offering_id = input("\nEnter offering ID: ")
+                delete_booking(user_id, offering_id)
+            except ValueError:
+                print("Invalid Client ID")
+        elif choice == "6":
+            print("\nAdd a New Client")
+            name = input("Enter your name: ")
+            phone_number = input("Enter your phone number: ")
+            age = input("Enter your age: ")
+            try:
+                age = int(age)  # Validate age as an integer
+                if age < 0:
+                    print("Age cannot be negative.")
+                else:
+                    # Call the function to add the client to the database
+                    add_client_to_database(name, phone_number, age)
+            except ValueError:
+                print("Invalid age. Please enter a numeric value.")
+
+        elif choice == "7":
             print("Logging out...")
             break
         else:
@@ -144,7 +170,7 @@ def view_my_bookings():
             else:
                 print("Your Bookings:")
                 for booking in bookings:
-                    print(f"Booking ID {booking[0]}: {booking[1]} at {booking[2]} - {booking[3]} to {booking[4]}")
+                    print(f"Booking ID {booking[0]}: {booking[1]}")
 
         except Exception as e:
             print(f"Error fetching bookings: {e}")

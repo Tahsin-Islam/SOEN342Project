@@ -55,7 +55,7 @@ def handle_admin_menu():
                         print("Invalid Offering ID. Please enter a number.")
                 else:
                     print("No bookings were deleted.")
-        elif choice == "3":
+        elif choice == "5":
             print("Logging out...")
             break
         else:
