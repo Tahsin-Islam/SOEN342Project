@@ -3,7 +3,7 @@ from psycopg2 import sql, OperationalError
 
 DB_HOST = "localhost"
 DB_NAME = "lesson_management_system"
-DB_USER = "tank"  # Make sure to put your own username
+DB_USER = "tahsinislam"  # Make sure to put your own username
 DB_PASSWORD = ""  # Make sure to put your own password
 
 def create_database():
@@ -11,7 +11,7 @@ def create_database():
         # Connect to PostgreSQL to create the new database
         connection = psycopg2.connect(
             host=DB_HOST,
-            dbname=DB_NAME,
+            dbname="postgres",
             user=DB_USER,
             password=DB_PASSWORD,
             port="5432"
@@ -71,6 +71,15 @@ try:
                 specialization VARCHAR(255),
                 start_date DATE,
                 end_date DATE
+            );
+            """
+
+            create_instructor_availability_table = """
+            CREATE TABLE IF NOT EXISTS Instructor_Availability (
+                instructor_id INT,
+                city TEXT,
+                PRIMARY KEY (instructor_id, city),
+                FOREIGN KEY (instructor_id) REFERENCES Instructor(id)
             );
             """
 
@@ -179,6 +188,7 @@ try:
             table_creation_queries = [
                 create_client_table,
                 create_instructor_table,
+                create_instructor_availability_table,
                 create_lesson_type_table,
                 create_schedule_table,
                 create_location_table,

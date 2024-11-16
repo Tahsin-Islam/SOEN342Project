@@ -28,6 +28,8 @@ def handle_instructor_menu():
         if choice == "1":
             select_available_lessons()
         elif choice == "2":
+            register_instructor_in_cities()
+        elif choice == "3":
             print("Logging out...")
             break
 
@@ -51,3 +53,53 @@ def select_available_lessons():
         finally:
             cursor.close()
             conn.close()
+
+def register_instructor_in_cities():
+    """
+    Allows an instructor to register their availability in one or multiple cities.
+    """
+    conn = get_db_connection()
+    if not conn:
+        print("Database connection failed.")
+        return
+
+    cursor = conn.cursor()
+    try:
+        # Prompt the user for the instructor's name
+        instructor_name = input("Enter your name: ").strip()
+
+        # Check if the instructor exists in the database
+        cursor.execute("SELECT id FROM Instructor WHERE name = %s;", (instructor_name,))
+        instructor = cursor.fetchone()
+
+        if not instructor:
+            print(f"No instructor found with the name '{instructor_name}'. Please register first.")
+            return
+
+        instructor_id = instructor[0]
+
+        # Prompt the user for the cities they want to register for
+        cities = input("Enter the cities where you're available (comma-separated): ").strip().split(',')
+
+        # Insert each city into the Instructor_Availability table
+        for city in cities:
+            city = city.strip()
+            try:
+                cursor.execute(
+                    "INSERT INTO Instructor_Availability (instructor_id, city) VALUES (%s, %s);",
+                    (instructor_id, city)
+                )
+            except psycopg2.errors.UniqueViolation:
+                print(f"Already registered availability in '{city}'. Skipping...")
+                conn.rollback()  # Rollback to continue with other inserts
+            else:
+                print(f"Availability in '{city}' registered successfully.")
+
+        # Commit all changes
+        conn.commit()
+
+    except Exception as e:
+        print(f"Error registering availability: {e}")
+    finally:
+        cursor.close()
+        conn.close()
