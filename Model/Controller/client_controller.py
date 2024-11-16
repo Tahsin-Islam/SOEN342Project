@@ -1,6 +1,8 @@
 import psycopg2
 from psycopg2 import OperationalError
 from client_view import display_client_menu, get_client_choice
+from selectlesson import manage_user_lessons
+from bookoffering import book_offer
 
 DB_HOST = "localhost"
 DB_NAME = "lesson_management_system"
@@ -27,11 +29,36 @@ def handle_client_menu():
 
         if choice == "1":
             view_available_lessons()
-        elif choice == "2":
             book_lesson()
+        elif choice == "2":
+            age = input("Enter your age: ")
+            try:
+                age = int(age)
+                if age < 18:
+                    print("You must be 18 or older to create a booking. Returning to the menu.")
+                    continue  # Return to the menu if not old enough
+            except ValueError:
+                print("Invalid age. Please enter a numeric value.")
+                continue
+
+            # If age verification passes, proceed with booking
+            client_id = input("\nEnter your client ID: ")
+            try:
+                user_id = int(client_id)  # Ensure the input is valid
+                book_offer(user_id)  # Pass the validated user ID to the booking function
+            except ValueError:
+                print("Invalid client ID. Please enter a numeric value.")
+
         elif choice == "3":
             view_my_bookings()
         elif choice == "4":
+            client_id = input("\nEnter your client ID: ")
+            try:
+                user_id = int(client_id)  # Ensure the input is valid
+                manage_user_lessons(user_id)
+            except ValueError:
+                print("Invalid client ID. Please enter a numeric value.")
+        elif choice == "5":
             print("Logging out...")
             break
         else:
@@ -67,22 +94,22 @@ def book_lesson():
     if conn:
         cursor = conn.cursor()
         try:
-            cursor.execute("SELECT availability FROM lessons WHERE lesson_id = %s;", (lesson_id,))
+            cursor.execute("SELECT * FROM offering WHERE id = %s;", (lesson_id,))
             lesson = cursor.fetchone()
 
             if lesson and lesson[0]:  # Check if the lesson is available
                 # Insert the booking into the Bookings table
                 cursor.execute("""
-                    INSERT INTO bookings (client_id, lesson_id, booking_date)
-                    VALUES (%s, %s, CURRENT_DATE) RETURNING booking_id;
+                    INSERT INTO booking (client_id, offering_id)
+                    VALUES (%s, %s) RETURNING id;
                 """, (client_id, lesson_id))
                 booking_id = cursor.fetchone()[0]
                 
                 # Update lesson availability to false
                 cursor.execute("""
-                    UPDATE lessons
-                    SET availability = false
-                    WHERE lesson_id = %s;
+                    UPDATE offering
+                    SET isFull = false
+                    WHERE id = %s;
                 """, (lesson_id,))
                 
                 conn.commit()
@@ -104,9 +131,10 @@ def view_my_bookings():
         cursor = conn.cursor()
         try:
             cursor.execute("""
-                SELECT b.booking_id, l.specialization, l.location, l.start_time, l.end_time 
-                FROM bookings b
-                JOIN lessons l ON b.lesson_id = l.lesson_id
+                SELECT b.id, l.address
+                FROM booking b
+                JOIN offering o ON b.offering_id = o.id
+                JOIN location l ON l.id = o.location_id
                 WHERE b.client_id = %s;
             """, (client_id,))
             bookings = cursor.fetchall()

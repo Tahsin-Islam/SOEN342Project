@@ -38,7 +38,7 @@ def select_available_lessons():
     if conn:
         cursor = conn.cursor()
         try:
-            cursor.execute("SELECT lesson_type_id, mode, start_date, end_date, location_id FROM lesson;")
+            cursor.execute("SELECT lesson_type_id, mode, start_date, end_date, location_id FROM lesson WHERE mode = true;")
             lessons = cursor.fetchall()
 
             if not lessons:

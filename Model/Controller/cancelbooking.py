@@ -4,7 +4,7 @@ from psycopg2 import sql
 # Database connection settings
 DB_HOST = "localhost"
 DB_NAME = "lesson_management_system"
-DB_USER = "tank"  # Change to your database user
+DB_USER = "tahsinislam"  # Change to your database user
 DB_PASSWORD = ""  # Change to your database password
 
 # Function to get the user's bookings

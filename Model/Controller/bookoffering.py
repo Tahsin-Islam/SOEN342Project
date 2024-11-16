@@ -3,7 +3,7 @@ from psycopg2 import sql, OperationalError
 
 DB_HOST = "localhost"
 DB_NAME = "lesson_management_system"
-DB_USER = "tank"  # Make sure to put your own username
+DB_USER = "tahsinislam"  # Make sure to put your own username
 DB_PASSWORD = ""  # Make sure to put your own password
 
 def get_available_offerings():
@@ -98,10 +98,11 @@ client_id = 1  # Assume client is logged in with id 1
 
 
 # If offerings are returned as None (meaning an error or no offerings), avoid trying to book
-x = get_available_offerings()
+def book_offer(user_id):
+    x = get_available_offerings()
 
-if x is not None:
-    create_booking(1, x)
-else:
-    print("No available offerings to book.")
+    if x is not None:
+        create_booking(user_id, x)
+    else:
+        print("No available offerings to book.")
 

@@ -3,7 +3,7 @@ from psycopg2 import sql
 
 DB_HOST = "localhost"
 DB_NAME = "lesson_management_system"
-DB_USER = "tank"
+DB_USER = "tahsinislam"
 DB_PASSWORD = ""
 
 def manage_user_lessons(user_id):
@@ -86,5 +86,3 @@ def manage_user_lessons(user_id):
         print(f"Database error: {e}")
     except Exception as e:
         print(f"Error: {e}")
-
-manage_user_lessons(1)

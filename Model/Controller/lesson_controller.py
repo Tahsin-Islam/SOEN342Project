@@ -3,7 +3,7 @@ from psycopg2 import OperationalError
 
 DB_HOST = "localhost"
 DB_NAME = "lesson_management_system"
-DB_USER = "tank"  # Replace with your username
+DB_USER = "tahsinislam"  # Replace with your username
 DB_PASSWORD = ""  # Replace with your password
 
 def get_user_choice(options, prompt_message):

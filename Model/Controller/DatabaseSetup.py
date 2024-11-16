@@ -185,6 +185,7 @@ try:
             """
             create_booking_table = """
                 CREATE TABLE IF NOT EXISTS booking(
+                    id SERIAL PRIMARY KEY,
                     offering_id INT REFERENCES Offering(id) ON DELETE CASCADE,
                     client_id INT REFERENCES Client(id)ON DELETE CASCADE
             )
@@ -205,7 +206,7 @@ try:
                 create_lesson_time_slots_table,
                 create_daily_schedule_timeslot_table,
                 create_sch_daily_sch_table,
-                create_booking_table,
+                create_booking_table
             ]
 
             for query in table_creation_queries:

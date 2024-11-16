@@ -2,6 +2,7 @@ import psycopg2
 from psycopg2 import OperationalError
 from admin_view import display_admin_menu, get_admin_choice
 from lesson_controller import create_lesson
+from cancelbooking import get_user_bookings, delete_booking
 
 DB_HOST = "localhost"
 DB_NAME = "lesson_management_system"
@@ -28,28 +29,33 @@ def handle_admin_menu():
 
         if choice == "1":
             # Collect parameters for creating a lesson
-            location_name = input("Enter the location name: ")
-            date = input("Enter the date (YYYY-MM-DD): ")
-            specialization = input("Enter the specialization (e.g., Yoga, Karate): ")
-            
-            # Collect the additional lesson details
-            name = input("Enter the lesson name: ")
-            address = input("Enter the address: ")
-            city = input("Enter the city: ")
-            space_type = input("Enter the space type (e.g., Indoor, Outdoor): ")
-            capacity = input("Enter the capacity: ")
-
-            # Ensure capacity is an integer
+            create_lesson()        
+        elif choice == "2":
+            client_id = input("Enter the client ID to view bookings: ")
             try:
-                capacity = int(capacity)
+                # Ensure client_id is an integer
+                client_id = int(client_id)
             except ValueError:
-                print("Invalid input for capacity. Please enter a number.")
+                print("Invalid client ID. Please enter a number.")
                 continue
 
-            # Call the create_lesson function with user inputs
-            create_lesson(name, address, city, space_type, capacity, location_name, date, specialization)
+            # Display the user's bookings
+            bookings = get_user_bookings(client_id)
 
-        elif choice == "2":
+            if bookings:
+                # Ask if they want to delete a booking
+                delete_choice = input("Do you want to delete a booking? (yes/no): ").strip().lower()
+                if delete_choice == "yes":
+                    try:
+                        offering_id_to_delete = input("Enter the Offering ID to delete: ")
+                        # Ensure offering_id is an integer
+                        offering_id_to_delete = int(offering_id_to_delete)
+                        delete_booking(client_id, offering_id_to_delete)
+                    except ValueError:
+                        print("Invalid Offering ID. Please enter a number.")
+                else:
+                    print("No bookings were deleted.")
+        elif choice == "3":
             print("Logging out...")
             break
         else:
