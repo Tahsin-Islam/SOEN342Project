@@ -3,8 +3,8 @@ from psycopg2 import OperationalError
 
 DB_HOST = "localhost"
 DB_NAME = "lesson_management_system"
-DB_USER = "tahsinislam"  # Replace with your own username
-DB_PASSWORD = ""  # Replace with your own password
+DB_USER = "tank"  # Replace with your username
+DB_PASSWORD = ""  # Replace with your password
 
 def get_user_choice(options, prompt_message):
     """
@@ -59,20 +59,26 @@ def create_lesson():
 
                 # Fetch available timeslots for the selected location
                 cursor.execute("""
-                    SELECT DISTINCT ON (ts.id) 
+                    SELECT 
                         ts.id AS timeslot_id, 
                         ts.start_time, 
-                        ts.end_time, 
-                        ds.day_of_week, 
-                        sch.start_date, 
-                        sch.end_date
-                    FROM Location loc
-                    JOIN Schedule sch ON loc.schedule_id = sch.id
-                    JOIN schedule_dailySchedule ssch ON sch.id = ssch.schedule_id
-                    JOIN DailySchedule ds ON ds.id = ssch.daily_schedule_id
-                    JOIN DailyScheduleTimeSlot dsts ON dsts.daily_schedule_id = ds.id
-                    JOIN TimeSlot ts ON ts.id = dsts.timeslot_id
-                    WHERE loc.id = %s
+                        ts.end_time,
+                        ds.day_of_week,
+                        s.start_date AS schedule_start_date,
+                        s.end_date AS schedule_end_date
+                    FROM 
+                        Location l
+                    JOIN 
+                        Schedule s ON l.schedule_id = s.id
+                    JOIN 
+                        ScheduleDailySchedule sds ON s.id = sds.schedule_id
+                    JOIN 
+                        DailySchedule ds ON sds.daily_schedule_id = ds.id
+                    JOIN 
+                        DailyScheduleTimeSlot dsts ON ds.id = dsts.daily_schedule_id
+                    JOIN 
+                        TimeSlot ts ON dsts.timeslot_id = ts.id
+                    WHERE l.id = %s
                 """, (location_id,))
 
                 timeslots = cursor.fetchall()
@@ -83,8 +89,8 @@ def create_lesson():
                 print("\nAvailable Timeslots:")
                 timeslot_choice = get_user_choice(
                     [
-                        f"Time Slot ID: {t[0]}, Start: {t[1]}, End: {t[2]}, Day: {t[3]}, "
-                        f"Schedule Start Date: {t[4]}, Schedule End Date: {t[5]}"
+                        f"ID: {t[0]}, Start: {t[1]}, End: {t[2]}, Day: {t[3]}, "
+                        f"Schedule Start: {t[4]}, Schedule End: {t[5]}"
                         for t in timeslots
                     ],
                     "Select a timeslot by number: "
@@ -98,9 +104,13 @@ def create_lesson():
 
                 # Insert the new lesson
                 cursor.execute("""
-                    INSERT INTO Lesson (lesson_type_id, mode, start_date, end_date, location_id, timeslot_id)
-                    VALUES (%s, %s, %s, %s, %s, %s)
-                """, (lesson_type_id, mode, start_date, end_date, location_id, timeslot_id))
+                    INSERT INTO Lesson (lesson_type_id, mode, start_date, end_date, location_id)
+                    VALUES (%s, %s, %s, %s, %s)
+                """, (lesson_type_id, mode, start_date, end_date, location_id))
+                cursor.execute("""
+                    INSERT INTO LessonTimeSlot (lesson_id, timeslot_id)
+                    VALUES (%s, %s)
+                """, (1, timeslot_id))
                 connection.commit()
 
                 print("New lesson created successfully.")
@@ -109,4 +119,3 @@ def create_lesson():
         print(f"Database connection error: {e}")
     except Exception as e:
         print(f"An error occurred: {e}")
-
